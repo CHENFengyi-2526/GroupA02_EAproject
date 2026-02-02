@@ -61,7 +61,5 @@
     5050,
     8025
   ],
-  "features": {
-    "ghcr.io/devcontainers/features/docker-from-docker:1": {}
-  }
+  "features": {}
 }

@@ -1,26 +1,44 @@
-{% extends "base.html.j2" %}
-{% import 'bootstrap/wtf.html' as wtf %}
-{% block app_content %}
-    <h1>{{ _('Hi, %(username)s!', username=current_user.username) }}</h1>
-    {% if form %}
-        {{ wtf.quick_form(form) }}
-        <br/>
-    {% endif %}
-    {% for post in posts %}
-        {% include "_post.html.j2" %}
-    {% endfor %}
-    <nav aria-label="...">
-        <ul class="pager">
-            <li class="previous{% if not prev_url %} disabled{% endif %}">
-                <a href="{{ prev_url or '#' }}">
-                    <span aria-hidden="true">&larr;</span> {{ _('Newer posts') }}
-                </a>
-            </li>
-            <li class="next{% if not next_url %} disabled{% endif %}">
-                <a href="{{ next_url or '#' }}">
-                    {{ _('Older posts') }} <span aria-hidden="true">&rarr;</span>
-                </a>
-            </li>
+{% extends "base.html" %}
+{% block content %}
+<div class="jumbotron bg-light p-5 rounded">
+    <h1 class="display-4">Welcome to ASP.NET Community Clone</h1>
+    <p class="lead">Learn, share, and grow with ASP.NET tutorials, Q&A, and resources.</p>
+    <hr class="my-4">
+    <p>Get started by exploring our tutorials or asking a question.</p>
+    <a class="btn btn-primary btn-lg" href="{{ url_for('tutorials.list_tutorials') }}" role="button">View Tutorials</a>
+    <a class="btn btn-secondary btn-lg" href="{{ url_for('community.questions') }}" role="button">Ask a Question</a>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <h3>Latest Tutorials</h3>
+        <ul class="list-group">
+            {% for tutorial in tutorials %}
+            <li class="list-group-item"><a href="{{ url_for('tutorials.view_tutorial', id=tutorial.id) }}">{{ tutorial.title }}</a></li>
+            {% else %}
+            <li class="list-group-item">No tutorials yet.</li>
+            {% endfor %}
         </ul>
-    </nav>
+    </div>
+    <div class="col-md-4">
+        <h3>Recent Questions</h3>
+        <ul class="list-group">
+            {% for question in questions %}
+            <li class="list-group-item"><a href="{{ url_for('community.question_detail', id=question.id) }}">{{ question.title }}</a></li>
+            {% else %}
+            <li class="list-group-item">No questions yet.</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="col-md-4">
+        <h3>Top Resources</h3>
+        <ul class="list-group">
+            {% for resource in resources %}
+            <li class="list-group-item"><a href="{{ url_for('resources.view_resource', id=resource.id) }}">{{ resource.title }}</a></li>
+            {% else %}
+            <li class="list-group-item">No resources yet.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
 {% endblock %}

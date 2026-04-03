@@ -1,5 +1,5 @@
 from app import db, app
-from app.models import User, Post
+from app.models.models import User, Post
 
 
 app_context = app.app_context()

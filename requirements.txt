@@ -149,3 +149,14 @@ websocket-client==1.4.2
 Werkzeug==2.2.2
 WTForms==3.0.1
 zipp==3.11.0
+
+Flask==2.3.3
+Flask-SQLAlchemy==3.0.5git
+Flask-Migrate==4.0.5
+Flask-Login==0.6.2
+Flask-WTF==1.1.1
+WTForms==3.0.1
+PyMySQL==1.1.0
+bcrypt==4.0.1
+python-dotenv==1.0.0
+gunicorn==20.1.0

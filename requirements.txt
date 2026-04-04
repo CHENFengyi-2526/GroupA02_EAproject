@@ -134,3 +134,4 @@ websocket-client==1.4.2
 Werkzeug==3.1.8
 WTForms==3.0.1
 zipp==3.11.0
+Flask-Migrate>=4.0.0

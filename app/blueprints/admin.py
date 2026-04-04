@@ -1,120 +1,84 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, abort
-from flask_login import login_required, current_user
+# app/blueprints/admin.py
+from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask_login import login_required
+from app.decorators import admin_required
 from app.extensions import db
-from app.models.user import User, UserProfile, UserActivityLog
-from app.models.tutorial import Tutorial, Lesson
-from app.models.community import Question, Answer, Comment
-from app.models.resource import Resource, Category, ResourceTag
+from app.models.tutorial import TutorialCategory
+from app.models.resource import ResourceCategory
+from app.models.site import SiteSetting
+from app.forms import TutorialCategoryForm, ResourceCategoryForm, SiteSettingForm
 
 bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 
-def admin_required(func):
-    def decorated_view(*args, **kwargs):
-        if not current_user.is_authenticated or not current_user.is_admin:
-            abort(403)
-        return func(*args, **kwargs)
-    return decorated_view
-
-@bp.route('/')
+@bp.route('/tutorial-categories')
 @login_required
 @admin_required
-def dashboard():
+def list_tutorial_categories():
+    categories = TutorialCategory.query.order_by(TutorialCategory.sort_order).all()
+    return render_template('admin/tutorial_categories.html', categories=categories)
 
-    user_count = User.query.count()
-    tutorial_count = Tutorial.query.count()
-    question_count = Question.query.count()
-    resource_count = Resource.query.count()
-    return render_template('admin/dashboard.html',
-                         user_count=user_count,
-                         tutorial_count=tutorial_count,
-                         question_count=question_count,
-                         resource_count=resource_count)
-
-
-@bp.route('/users')
+@bp.route('/tutorial-category/create', methods=['GET', 'POST'])
 @login_required
 @admin_required
-def list_users():
-    users = User.query.all()
-    return render_template('admin/users.html', users=users)
+def create_tutorial_category():
+    form = TutorialCategoryForm()
+    if form.validate_on_submit():
+        cat = TutorialCategory(
+            name=form.name.data,
+            slug=form.slug.data,
+            description=form.description.data,
+            sort_order=form.sort_order.data
+        )
+        db.session.add(cat)
+        db.session.commit()
+        flash('Category created successfully', 'success')
+        return redirect(url_for('admin.list_tutorial_categories'))
+    return render_template('admin/category_form.html', form=form, title='Create a new tutorial category')
 
-@bp.route('/user/<int:id>/toggle_admin', methods=['POST'])
+@bp.route('/tutorial-category/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
 @admin_required
-def toggle_admin(id):
-    user = User.query.get_or_404(id)
-    if user.id == current_user.id:
-        flash('You cannot change your own admin status.', 'danger')
-        return redirect(url_for('admin.list_users'))
-    user.is_admin = not user.is_admin
+def edit_tutorial_category(id):
+    cat = TutorialCategory.query.get_or_404(id)
+    form = TutorialCategoryForm(obj=cat)
+    if form.validate_on_submit():
+        cat.name = form.name.data
+        cat.slug = form.slug.data
+        cat.description = form.description.data
+        cat.sort_order = form.sort_order.data
+        db.session.commit()
+        flash('Classification updated successfully', 'success')
+        return redirect(url_for('admin.list_tutorial_categories'))
+    return render_template('admin/category_form.html', form=form, title='Edit tutorial category')
+
+@bp.route('/tutorial-category/<int:id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def delete_tutorial_category(id):
+    cat = TutorialCategory.query.get_or_404(id)
+    db.session.delete(cat)
     db.session.commit()
-    flash(f'User {user.username} admin status updated.', 'success')
-    return redirect(url_for('admin.list_users'))
+    flash('Category deleted', 'success')
+    return redirect(url_for('admin.list_tutorial_categories'))
 
-@bp.route('/user/<int:id>/delete', methods=['POST'])
+
+@bp.route('/settings')
 @login_required
 @admin_required
-def delete_user(id):
-    user = User.query.get_or_404(id)
-    if user.id == current_user.id:
-        flash('You cannot delete yourself.', 'danger')
-        return redirect(url_for('admin.list_users'))
-    db.session.delete(user)
-    db.session.commit()
-    flash(f'User {user.username} deleted.', 'success')
-    return redirect(url_for('admin.list_users'))
+def list_settings():
+    settings = SiteSetting.query.all()
+    return render_template('admin/settings.html', settings=settings)
 
-
-@bp.route('/tutorials')
+@bp.route('/setting/<string:key>/edit', methods=['GET', 'POST'])
 @login_required
 @admin_required
-def list_tutorials():
-    tutorials = Tutorial.query.all()
-    return render_template('admin/tutorials.html', tutorials=tutorials)
-
-@bp.route('/tutorial/<int:id>/delete', methods=['POST'])
-@login_required
-@admin_required
-def delete_tutorial(id):
-    tutorial = Tutorial.query.get_or_404(id)
-    db.session.delete(tutorial)
-    db.session.commit()
-    flash('Tutorial deleted.', 'success')
-    return redirect(url_for('admin.list_tutorials'))
-
-
-@bp.route('/questions')
-@login_required
-@admin_required
-def list_questions():
-    questions = Question.query.all()
-    return render_template('admin/questions.html', questions=questions)
-
-@bp.route('/question/<int:id>/delete', methods=['POST'])
-@login_required
-@admin_required
-def delete_question(id):
-    question = Question.query.get_or_404(id)
-    db.session.delete(question)
-    db.session.commit()
-    flash('Question deleted.', 'success')
-    return redirect(url_for('admin.list_questions'))
-
-
-@bp.route('/resources')
-@login_required
-@admin_required
-def list_resources():
-    resources = Resource.query.all()
-    return render_template('admin/resources.html', resources=resources)
-
-@bp.route('/resource/<int:id>/delete', methods=['POST'])
-@login_required
-@admin_required
-def delete_resource(id):
-    resource = Resource.query.get_or_404(id)
-    db.session.delete(resource)
-    db.session.commit()
-    flash('Resource deleted.', 'success')
-    return redirect(url_for('admin.list_resources'))
+def edit_setting(key):
+    setting = SiteSetting.query.filter_by(key=key).first_or_404()
+    form = SiteSettingForm(obj=setting)
+    if form.validate_on_submit():
+        setting.value = form.value.data
+        db.session.commit()
+        flash('Settings updated', 'success')
+        return redirect(url_for('admin.list_settings'))
+    return render_template('admin/setting_edit.html', form=form, setting=setting)

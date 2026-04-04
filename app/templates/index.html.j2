@@ -1,44 +1,99 @@
-{% extends "base.html" %}
+{% extends "base.html.j2" %}
+
+{% block title %}ASP.NET Core - Free. Cross-platform. Open-source{% endblock %}
+
 {% block content %}
-<div class="jumbotron bg-light p-5 rounded">
-    <h1 class="display-4">Welcome to ASP.NET Community Clone</h1>
-    <p class="lead">Learn, share, and grow with ASP.NET tutorials, Q&A, and resources.</p>
-    <hr class="my-4">
-    <p>Get started by exploring our tutorials or asking a question.</p>
-    <a class="btn btn-primary btn-lg" href="{{ url_for('tutorials.list_tutorials') }}" role="button">View Tutorials</a>
-    <a class="btn btn-secondary btn-lg" href="{{ url_for('community.questions') }}" role="button">Ask a Question</a>
+<!-- Hero Section -->
+<div class="hero">
+    <div class="container text-center">
+        <h1 class="display-3 fw-bold">ASP.NET Core</h1>
+        <p class="lead mb-4">Free. Cross-platform. Open-source.<br>Build modern web apps and services with .NET and C#.</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{{ url_for('tutorials.list') }}" class="btn btn-light btn-lg px-4">Get Started</a>
+            <a href="https://dotnet.microsoft.com/download" class="btn btn-outline-light btn-lg px-4">Download .NET</a>
+        </div>
+    </div>
 </div>
 
-<div class="row mt-5">
-    <div class="col-md-4">
-        <h3>Latest Tutorials</h3>
-        <ul class="list-group">
-            {% for tutorial in tutorials %}
-            <li class="list-group-item"><a href="{{ url_for('tutorials.view_tutorial', id=tutorial.id) }}">{{ tutorial.title }}</a></li>
-            {% else %}
-            <li class="list-group-item">No tutorials yet.</li>
-            {% endfor %}
-        </ul>
+<div class="container">
+    <!-- Features Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm p-4">
+                <div class="card-body text-center">
+                    <i class="fas fa-rocket fa-3x mb-3"></i>
+                    <h3 class="h5">Fast & Scalable</h3>
+                    <p class="text-muted">ASP.NET Core is optimized for performance and scales easily to handle millions of users.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm p-4">
+                <div class="card-body text-center">
+                    <i class="fas fa-shield-alt fa-3x mb-3"></i>
+                    <h3 class="h5">Secure by Default</h3>
+                    <p class="text-muted">Built-in protection against XSS, CSRF, and SQL injection. Supports modern auth protocols.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm p-4">
+                <div class="card-body text-center">
+                    <i class="fas fa-code-branch fa-3x mb-3"></i>
+                    <h3 class="h5">Open Source</h3>
+                    <p class="text-muted">Thousands of contributors and a vibrant community on GitHub.</p>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="col-md-4">
-        <h3>Recent Questions</h3>
-        <ul class="list-group">
-            {% for question in questions %}
-            <li class="list-group-item"><a href="{{ url_for('community.question_detail', id=question.id) }}">{{ question.title }}</a></li>
-            {% else %}
-            <li class="list-group-item">No questions yet.</li>
-            {% endfor %}
-        </ul>
+
+    <!-- Latest Tutorials & Featured Resources -->
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white border-0 pt-3">
+                    <h4><i class="fas fa-book-open me-2"></i> Latest Tutorials</h4>
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for tutorial in latest_tutorials %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{{ url_for('tutorials.view', slug=tutorial.slug) }}" class="text-decoration-none">{{ tutorial.title }}</a>
+                        <span class="badge bg-secondary rounded-pill">{{ tutorial.difficulty }}</span>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item text-muted">No tutorials yet. Check back soon!</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white border-0 pt-3">
+                    <h4><i class="fas fa-download me-2"></i> Featured Resources</h4>
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for resource in featured_resources %}
+                    <li class="list-group-item">
+                        <a href="{{ url_for('resources.view', id=resource.id) }}" class="text-decoration-none">{{ resource.title }}</a>
+                        <p class="text-muted small mb-0">{{ resource.description[:80] }}...</p>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item text-muted">No resources yet. Stay tuned!</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
     </div>
-    <div class="col-md-4">
-        <h3>Top Resources</h3>
-        <ul class="list-group">
-            {% for resource in resources %}
-            <li class="list-group-item"><a href="{{ url_for('resources.view_resource', id=resource.id) }}">{{ resource.title }}</a></li>
-            {% else %}
-            <li class="list-group-item">No resources yet.</li>
-            {% endfor %}
-        </ul>
+
+    <!-- Call to Action -->
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <div class="bg-light p-5 rounded-3">
+                <h3>Ready to build something amazing?</h3>
+                <p class="lead">Join the community and start learning ASP.NET Core today.</p>
+                <a href="{{ url_for('community.index') }}" class="btn btn-purple btn-lg px-4">Join the Community</a>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

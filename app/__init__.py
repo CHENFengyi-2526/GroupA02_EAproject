@@ -1,34 +1,35 @@
 from flask import Flask
+from app.config import Config
 from flask_migrate import Migrate
-from flask_login import LoginManager
-from flask_bootstrap import Bootstrap
-from flask_admin import Admin
-from app.config import config
+from app.extensions import db, login_manager, bootstrap
 
-from .extensions import db, login_manager, bootstrap, admin, migrate
-
-from .blueprints import auth, main, tutorials, community, resources
-
-def app(config_name='default'):
+def create_app(config_class=Config):
     app = Flask(__name__)
-    app.config.from_object(config[config_name])
-    config[config_name].init_app(app)
+    app.config.from_object(config_class)
+    
     
     db.init_app(app)
-    migrate.init_app(app, db)
     login_manager.init_app(app)
     bootstrap.init_app(app)
-    admin.init_app(app)
+    migrate = Migrate(app, db)
     
-    app.register_blueprint(auth.bp)
-    app.register_blueprint(main.bp)
-    app.register_blueprint(tutorials.bp, url_prefix='/tutorials')
-    app.register_blueprint(community.bp, url_prefix='/community')
-    app.register_blueprint(resources.bp, url_prefix='/resources')
     
-    from app.models.user import User
-    @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(int(user_id))
+    from app.blueprints.auth import bp as auth_bp
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+    
+    from app.blueprints.main import bp as main_bp
+    app.register_blueprint(main_bp)
+    
+    from app.blueprints.tutorials import bp as tutorials_bp
+    app.register_blueprint(tutorials_bp, url_prefix='/tutorials')
+    
+    from app.blueprints.resources import bp as resources_bp
+    app.register_blueprint(resources_bp, url_prefix='/resources')
+    
+    from app.blueprints.community import bp as community_bp
+    app.register_blueprint(community_bp, url_prefix='/community')
+    
+    from app.blueprints.admin import bp as admin_bp
+    app.register_blueprint(admin_bp, url_prefix='/admin')
     
     return app

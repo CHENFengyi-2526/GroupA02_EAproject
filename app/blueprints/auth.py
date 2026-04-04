@@ -1,3 +1,4 @@
+#login/logout/register
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session, make_response
 from flask_login import login_user, logout_user, current_user, login_required
 from app.extensions import db

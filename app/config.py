@@ -1,4 +1,7 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -14,5 +17,23 @@ class Config(object):
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     ADMINS = ['cywong@example.com']
-    POSTS_PER_PAGE = 3
+    POSTS_PER_PAGE = 10
     LANGUAGES = ['en', 'es', 'zh']
+
+
+class DevelopmentConfig(Config):
+    DEBUG = True
+    
+
+class ProductionConfig(Config):
+    DEBUG = False
+    
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    if not SQLALCHEMY_DATABASE_URI:
+        raise ValueError("Production requires DATABASE_URL")
+
+config = {
+    'development': DevelopmentConfig,
+    'production': ProductionConfig,
+    'default': DevelopmentConfig
+}

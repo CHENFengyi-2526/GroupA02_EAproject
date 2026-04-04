@@ -12,7 +12,7 @@ bp = Blueprint('community', __name__, url_prefix='/community')
 def index():
     page = request.args.get('page', 1, type=int)
     posts = DiscussionPost.query.order_by(DiscussionPost.is_pinned.desc(), DiscussionPost.created_at.desc()).paginate(page=page, per_page=20)
-    return render_template('community/index.html', posts=posts)
+    return render_template('community.html.j2', posts=posts)
 
 
 @bp.route('/post/<int:id>')

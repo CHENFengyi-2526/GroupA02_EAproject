@@ -18,7 +18,7 @@ def list():
     else:
         resources = Resource.query.all()
     categories = ResourceCategory.query.all()
-    return render_template('resources/list.html', resources=resources, categories=categories)
+    return render_template('resources_list.html.j2', resources=resources, categories=categories)
 
 @bp.route('/<int:id>')
 def view(id):

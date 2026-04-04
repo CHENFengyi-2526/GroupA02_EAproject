@@ -17,7 +17,7 @@ def list():
     else:
         tutorials = Tutorial.query.filter_by(is_published=True).all()
     categories = TutorialCategory.query.order_by(TutorialCategory.sort_order).all()
-    return render_template('tutorials/list.html', tutorials=tutorials, categories=categories)
+    return render_template('tutorials_list.html.j2', tutorials=tutorials, categories=categories)
 
 
 @bp.route('/<slug>')

@@ -20,10 +20,25 @@ def view_post(id):
     post = DiscussionPost.query.get_or_404(id)
     form = CommentForm()
     
+
     post.view_count += 1
     db.session.commit()
+
     comments = post.comments.order_by(PostComment.created_at.asc()).all()
-    return render_template('community_post.html.j2', post=post, comments=comments, form=form)
+
+    current_user_has_liked = False
+    if current_user.is_authenticated:
+        existing_like = PostLike.query.filter_by(
+            user_id=current_user.id,
+            post_id=post.id
+        ).first()
+        current_user_has_liked = existing_like is not None
+
+    return render_template('community_post.html.j2', 
+                           post=post, 
+                           comments=comments, 
+                           form=form,
+                           current_user_has_liked=current_user_has_liked)
 
 
 @bp.route('/post/create', methods=['GET', 'POST'])
@@ -160,3 +175,25 @@ def like_post(post_id):
             'liked': False,
             'like_count': 0
         }), 500
+    
+@bp.route('/comment/<int:comment_id>/reply', methods=['POST'])
+@login_required
+def reply_to_comment(comment_id):
+    parent_comment = PostComment.query.get_or_404(comment_id)
+    form = CommentForm()
+
+    if form.validate_on_submit():
+        reply = PostComment(
+            content=form.content.data,
+            post_id=parent_comment.post_id,
+            user_id=current_user.id,
+            parent_id=parent_comment.id   
+        )
+        db.session.add(reply)
+        db.session.commit()
+        
+        flash('Reply posted successfully', 'success')
+        return redirect(url_for('community.view_post', id=parent_comment.post_id))
+    else:
+        flash('Reply content cannot be empty.', 'danger')
+        return redirect(url_for('community.view_post', id=parent_comment.post_id))

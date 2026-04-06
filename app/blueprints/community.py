@@ -1,5 +1,5 @@
 # app/blueprints/community.py
-from flask import render_template, redirect, url_for, flash, request, abort, Blueprint
+from flask import render_template, redirect, url_for, flash, request, abort, Blueprint, jsonify
 from flask_login import login_required, current_user
 from app.extensions import db
 from app.models.community import DiscussionPost, PostComment, PostLike
@@ -128,18 +128,35 @@ def delete_comment(comment_id):
 @bp.route('/post/<int:post_id>/like', methods=['POST'])
 @login_required
 def like_post(post_id):
-    post = DiscussionPost.query.get_or_404(post_id)
-    existing = PostLike.query.filter_by(user_id=current_user.id, post_id=post_id).first()
-    if existing:
+    try:
+        post = DiscussionPost.query.get_or_404(post_id)
         
-        db.session.delete(existing)
-        post.like_count -= 1
+        existing_like = PostLike.query.filter_by(
+            user_id=current_user.id, 
+            post_id=post_id
+        ).first()
+
+        if existing_like:
+            db.session.delete(existing_like)
+            liked = False
+        else:
+            like = PostLike(user_id=current_user.id, post_id=post_id)
+            db.session.add(like)
+            liked = True
+
         db.session.commit()
-        flash('Likes cancelled', 'info')
-    else:
-        like = PostLike(user_id=current_user.id, post_id=post_id)
-        db.session.add(like)
-        post.like_count += 1
-        db.session.commit()
-        flash('Like successfully', 'success')
-    return redirect(url_for('community.view_post', id=post.id))
+
+        like_count = PostLike.query.filter_by(post_id=post_id).count()
+
+        return jsonify({
+            'liked': liked,
+            'like_count': like_count
+        })
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Like Error for post {post_id}: {str(e)}")
+        return jsonify({
+            'liked': False,
+            'like_count': 0
+        }), 500

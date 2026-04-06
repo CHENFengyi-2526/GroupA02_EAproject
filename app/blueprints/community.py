@@ -20,10 +20,25 @@ def view_post(id):
     post = DiscussionPost.query.get_or_404(id)
     form = CommentForm()
     
+
     post.view_count += 1
     db.session.commit()
+
     comments = post.comments.order_by(PostComment.created_at.asc()).all()
-    return render_template('community_post.html.j2', post=post, comments=comments, form=form)
+
+    current_user_has_liked = False
+    if current_user.is_authenticated:
+        existing_like = PostLike.query.filter_by(
+            user_id=current_user.id,
+            post_id=post.id
+        ).first()
+        current_user_has_liked = existing_like is not None
+
+    return render_template('community_post.html.j2', 
+                           post=post, 
+                           comments=comments, 
+                           form=form,
+                           current_user_has_liked=current_user_has_liked)
 
 
 @bp.route('/post/create', methods=['GET', 'POST'])

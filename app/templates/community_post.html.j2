@@ -46,8 +46,9 @@
                         <button id="like-btn" 
                                 class="btn like-button {{ 'btn-danger text-white' if current_user_has_liked else 'btn-outline-danger' }}"
                                 onclick="toggleLike({{ post.id }})">
-                            <i class="fas fa-heart" id="like-icon"></i> 
-                            <span id="like-count" class="ms-1">{{ post.likes.count() if post.likes else 0 }}</span>
+                            <i class="fas fa-heart" id="like-icon" 
+                            style="{{ 'color: white;' if current_user_has_liked else 'color: #dc3545;' }}"></i> 
+                            <span id="like-count" class="ms-1 fw-bold">{{ post.likes.count() if post.likes else 0 }}</span>
                         </button>
 
                         <button class="btn btn-outline-secondary">

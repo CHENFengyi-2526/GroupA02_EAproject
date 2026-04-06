@@ -38,11 +38,28 @@
                         </div>
                     </div>
 
-                    <div class="post-content fs-5 lh-lg">
+                   <div class="post-content fs-5 lh-lg">
                         {{ post.content | safe }}
                     </div>
-                </div>
-            </div>
+                    <!-- Like button -->
+                    <div class="d-flex gap-3 mt-4">
+                        <button id="like-btn" 
+                                class="btn like-button {{ 'btn-danger text-white' if current_user_has_liked else 'btn-outline-danger' }}"
+                                onclick="toggleLike({{ post.id }})">
+                            <i class="fas fa-heart" id="like-icon"></i> 
+                            <span id="like-count" class="ms-1">{{ post.likes.count() if post.likes else 0 }}</span>
+                        </button>
+
+                        <button class="btn btn-outline-secondary">
+                            <i class="fas fa-comment"></i> 
+                            {{ post.reply_count }} Replies
+                        </button>
+
+                        <button class="btn btn-outline-secondary">
+                            <i class="fas fa-eye"></i> 
+                            {{ post.view_count }} Views
+                        </button>
+                    </div>
 
             <!-- Comments section -->
             <h4 class="mb-4">Replies ({{ comments|length }})</h4>
@@ -98,4 +115,44 @@
         </div>
     </div>
 </div>
+
+{% block extra_js %}
+<script>
+function toggleLike(postId) {
+    const btn = document.getElementById('like-btn');
+    const countSpan = document.getElementById('like-count');
+    const icon = document.getElementById('like-icon');
+
+    fetch(`/community/post/${postId}/like`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        countSpan.textContent = data.like_count;
+
+        if (data.liked) {
+            btn.classList.remove('btn-outline-danger');
+            btn.classList.add('btn-danger', 'text-white');
+            icon.style.color = 'white';
+            icon.classList.add('like-animate');
+
+        } else {
+            btn.classList.remove('btn-danger', 'text-white');
+            btn.classList.add('btn-outline-danger');
+            icon.style.color = '';   
+            icon.classList.remove('like-animate');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Like 操作失敗，請稍後再試');
+    });
+}
+</script>
+{% endblock %}
+
 {% endblock %}

@@ -176,16 +176,26 @@ def edit_comment(comment_id):
 @login_required
 def delete_comment(comment_id):
     comment = PostComment.query.get_or_404(comment_id)
-    if comment.user_id != current_user.id and not current_user.is_admin():
-        abort(403)
     post_id = comment.post_id
-    db.session.delete(comment)
+
+    if not current_user.is_admin() and comment.user_id != current_user.id:
+        abort(403)
+
+    
+    if current_user.is_admin():
+        comment.content = "[Comment was deleted by admin]"
+    else:
+        db.session.delete(comment)
+
     db.session.commit()
+
     
     post = DiscussionPost.query.get(post_id)
-    post.reply_count = PostComment.query.filter_by(post_id=post_id).count()
-    db.session.commit()
-    flash('Comment deleted', 'success')
+    if post:
+        post.reply_count = PostComment.query.filter_by(post_id=post_id).count()
+        db.session.commit()
+
+    flash('Comment has been deleted.', 'success')
     return redirect(url_for('community.view_post', id=post_id))
 
 
@@ -246,3 +256,26 @@ def reply_to_comment(comment_id):
     else:
         flash('Reply content cannot be empty.', 'danger')
         return redirect(url_for('community.view_post', id=parent_comment.post_id))
+    
+@bp.route('/reply/<int:reply_id>/delete', methods=['POST'])
+@login_required
+def delete_reply(reply_id):
+    reply = PostComment.query.get_or_404(reply_id)
+    post_id = reply.post_id
+
+    
+    if not current_user.is_admin():
+        abort(403)
+
+    
+    reply.content = "[Reply was deleted by admin]"
+    db.session.commit()
+
+    
+    post = DiscussionPost.query.get(post_id)
+    if post:
+        post.reply_count = PostComment.query.filter_by(post_id=post_id).count()
+        db.session.commit()
+
+    flash('Reply has been deleted.', 'success')
+    return redirect(url_for('community.view_post', id=post_id)) 

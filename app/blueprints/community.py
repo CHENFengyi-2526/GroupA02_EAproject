@@ -53,7 +53,7 @@ def view_post(id):
         session_key = f'viewed_post_{post.id}'
         last_viewed = session.get(session_key)
 
-        if last_viewed is None or (datetime.utcnow() - last_viewed.replace(tzinfo=None)) > timedelta(minutes=30):
+        if last_viewed is None or (datetime.utcnow() - last_viewed.replace(tzinfo=None)) > timedelta(seconds=30):
             post.view_count += 1
             session[session_key] = datetime.utcnow()   
             db.session.commit()

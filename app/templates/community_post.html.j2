@@ -112,8 +112,8 @@
                                     <div class="d-flex align-items-center gap-2">
                                         <small class="text-muted">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
                                         
-                                        <!-- Admin Delete Button for Main Comment -->
-                                        {% if current_user.is_admin() %}
+                                        <!-- Admin Delete Button -->
+                                        {% if current_user.is_authenticated and current_user.is_admin() %}
                                         <button onclick="confirmDeleteComment({{ comment.id }})" 
                                                 class="btn btn-sm btn-outline-danger py-0 px-2" 
                                                 title="Delete Comment">
@@ -164,12 +164,12 @@
                                                     <small class="text-muted">{{ reply.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
                                                     
                                                     <!-- Admin Delete Button for Reply -->
-                                                    {% if current_user.is_admin() %}
-                                                    <button onclick="confirmDeleteReply({{ reply.id }})" 
+                                                    {% if current_user.is_authenticated and current_user.is_admin() %}
+                                                        <button onclick="confirmDeleteReply({{ reply.id }})" 
                                                             class="btn btn-sm btn-outline-danger py-0 px-2" 
                                                             title="Delete Reply">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
                                                     {% endif %}
                                                 </div>
                                             </div>

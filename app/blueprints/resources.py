@@ -26,7 +26,7 @@ def view(id):
 
 @bp.route('/create', methods=['GET', 'POST'])
 @login_required
-@admin_required
+#@admin_required
 def create():
     form = ResourceForm()
     if form.validate_on_submit():

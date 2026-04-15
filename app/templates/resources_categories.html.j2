@@ -1,0 +1,71 @@
+{% extends "base.html.j2" %}
+
+{% block title %}Manage Categories - Resources{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Resource Categories</h2>
+        <a href="{{ url_for('resources.create_category') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>New Category
+        </a>
+    </div>
+
+    <div class="row">
+        {% if categories %}
+            {% for cat in categories %}
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm border-0 rounded-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="card-title">
+                                <i class="fas fa-{{ cat.icon or 'folder' }} me-2"></i>{{ cat.name }}
+                            </h5>
+                            <div>
+                                <a href="{{ url_for('resources.edit_category', id=cat.id) }}" class="btn btn-sm btn-outline-warning me-1">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ cat.id }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="card-text text-muted small mt-2">{{ cat.description or 'No description' }}</p>
+                        <p class="card-text"><small class="text-muted">Slug: {{ cat.slug }}</small></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delete Modal -->
+            <div class="modal fade" id="deleteModal{{ cat.id }}" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Delete Category</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to delete category "{{ cat.name }}"?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <form action="{{ url_for('resources.delete_category', id=cat.id) }}" method="post">
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info text-center py-5">
+                    <i class="fas fa-tags fa-3x mb-3 d-block"></i>
+                    <h5>No categories yet</h5>
+                    <p class="mb-0">Click "New Category" to create your first category.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

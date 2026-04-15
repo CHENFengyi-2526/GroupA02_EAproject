@@ -108,6 +108,51 @@
             overflow-x: auto;
         }
 
+
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+        body.dark-mode .navbar-dark.bg-dark {
+            background-color: #0d0d0d !important;
+        }
+        body.dark-mode .card {
+            background-color: #2d2d2d;
+            border-color: #3d3d3d;
+        }
+        body.dark-mode .card-header.bg-white {
+            background-color: #2d2d2d !important;
+        }
+        body.dark-mode .list-group-item {
+            background-color: #2d2d2d;
+            color: #e0e0e0;
+            border-color: #3d3d3d;
+        }
+        body.dark-mode .bg-light {
+            background-color: #2d2d2d !important;
+        }
+        body.dark-mode .text-muted {
+            color: #aaa !important;
+        }
+        body.dark-mode .alert-info {
+            background-color: #1a3a4a;
+            color: #e0e0e0;
+            border-color: #2a5a6a;
+        }
+        body.dark-mode footer {
+            background-color: #0d0d0d;
+            color: #aaa;
+        }
+        body.dark-mode .btn-outline-purple {
+            border-color: #9b6bcb;
+            color: #9b6bcb;
+        }
+        body.dark-mode .btn-outline-purple:hover {
+            background-color: #9b6bcb;
+            color: #1a1a1a;
+        }
+
+
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -131,9 +176,15 @@
                     {% endif %}
                 </ul>
                 <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="themeToggle">
+                            <i class="fas fa-moon"></i>
+                        </a>
+                    </li>
                     {% if current_user.is_authenticated %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                
                                 <i class="fas fa-user-circle"></i> {{ current_user.username }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
@@ -212,7 +263,50 @@
     </footer>
 
     <!-- Bootstrap JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js">
+
+    function setTheme(theme) {
+        if (theme === 'dark') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+        } else {
+            document.body.classList.remove('dark-mode');
+            document.getElementById('themeToggle').innerHTML = '<i class="fas fa-moon"></i>';
+        }
+
+        document.cookie = "theme=" + theme + "; path=/; max-age=" + (365 * 24 * 60 * 60);
+    }
+
+
+    function getCookie(name) {
+        let value = "; " + document.cookie;
+        let parts = value.split("; " + name + "=");
+        if (parts.length === 2) return parts.pop().split(";").shift();
+    }
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        let savedTheme = getCookie('theme');
+        if (savedTheme === 'dark') {
+            setTheme('dark');
+        } else {
+            setTheme('light');
+        }
+    });
+
+
+    document.getElementById('themeToggle').addEventListener('click', function(e) {
+        e.preventDefault();
+        let currentTheme = getCookie('theme');
+        if (currentTheme === 'dark') {
+            setTheme('light');
+        } else {
+            setTheme('dark');
+        }
+    });
+</script>
+    
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

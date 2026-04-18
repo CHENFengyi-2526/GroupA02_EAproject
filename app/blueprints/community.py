@@ -13,36 +13,53 @@ bp = Blueprint('community', __name__, url_prefix='/community')
 def index():
     page = request.args.get('page', 1, type=int)
     sort = request.args.get('sort', 'latest')
+    query = request.args.get('q', '').strip()
+    category = request.args.get('category', '').strip()   
 
-    #pinned post 
-    pinned_posts = DiscussionPost.query.filter_by(is_pinned=True)\
-        .order_by(DiscussionPost.created_at.desc()).all()
+    
+    pinned_query = DiscussionPost.query.filter_by(is_pinned=True)
+    if query:
+        pinned_query = pinned_query.filter(
+            (DiscussionPost.title.ilike(f'%{query}%')) |
+            (DiscussionPost.content.ilike(f'%{query}%'))
+        )
+    if category:
+        pinned_query = pinned_query.filter(DiscussionPost.category.ilike(category))
+    
+    pinned_posts = pinned_query.order_by(DiscussionPost.created_at.desc()).all()
 
-    # sort + non pinned post
+    
+    base_query = DiscussionPost.query.filter_by(is_pinned=False)
+
+    if query:
+        base_query = base_query.filter(
+            (DiscussionPost.title.ilike(f'%{query}%')) |
+            (DiscussionPost.content.ilike(f'%{query}%'))
+        )
+    if category:
+        base_query = base_query.filter(DiscussionPost.category.ilike(category))
+
+    
     if sort == 'replies':
-        query = DiscussionPost.query.filter_by(is_pinned=False)\
-            .order_by(DiscussionPost.reply_count.desc(), DiscussionPost.created_at.desc())
+        query_obj = base_query.order_by(DiscussionPost.reply_count.desc(), DiscussionPost.created_at.desc())
     elif sort == 'views':
-        query = DiscussionPost.query.filter_by(is_pinned=False)\
-            .order_by(DiscussionPost.view_count.desc(), DiscussionPost.created_at.desc())
+        query_obj = base_query.order_by(DiscussionPost.view_count.desc(), DiscussionPost.created_at.desc())
     elif sort == 'likes':
-        query = DiscussionPost.query.filter_by(is_pinned=False)\
-            .outerjoin(PostLike)\
+        query_obj = base_query.outerjoin(PostLike)\
             .group_by(DiscussionPost.id)\
             .order_by(func.count(PostLike.id).desc(), DiscussionPost.created_at.desc())
     else:  # latest
-        query = DiscussionPost.query.filter_by(is_pinned=False)\
-            .order_by(DiscussionPost.created_at.desc())
+        query_obj = base_query.order_by(DiscussionPost.created_at.desc())
 
+    pagination = query_obj.paginate(page=page, per_page=15, error_out=False)
 
-    pagination = query.paginate(page=page, per_page=20)
-
-    posts = pinned_posts + pagination.items
-
-    return render_template('community.html.j2', 
-                           posts=posts, 
-                           pagination=pagination)
-
+    return render_template('community.html.j2',
+                           pinned_posts=pinned_posts,
+                           posts=pagination.items,
+                           pagination=pagination,
+                           sort=sort,
+                           query=query,
+                           category=category)   
 
 @bp.route('/post/<int:id>')
 def view_post(id):

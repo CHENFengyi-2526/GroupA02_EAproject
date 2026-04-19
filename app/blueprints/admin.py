@@ -28,7 +28,7 @@ def dashboard():
 @admin_required
 def list_users():
     users = User.query.all()
-    return render_template('admin/users.html', users=users)
+    return render_template('admin/users.html.j2', user=User)
 
 @bp.route('/user/create', methods=['GET', 'POST'])
 @login_required

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, abort
+from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, session
 from flask_login import login_required, current_user
 from app.decorators import admin_required
 from app.extensions import db
@@ -46,14 +46,14 @@ def view(slug):
     tutorial = Tutorial.query.filter_by(slug=slug).first_or_404()
     if not tutorial.is_published and not (current_user.is_authenticated and current_user.is_admin()):
         abort(404)
-    from flask import session
+
     if not session.get(f'viewed_tutorial_{tutorial.id}'):
         tutorial.view_count += 1
         db.session.commit()
         session[f'viewed_tutorial_{tutorial.id}'] = True
     return render_template('tutorials_view.html.j2', tutorial=tutorial)
 
-#admin
+#tutorial
 @bp.route('/create', methods=['GET', 'POST'])
 @login_required
 @admin_required

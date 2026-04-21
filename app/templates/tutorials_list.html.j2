@@ -4,20 +4,20 @@
 
 {% block content %}
 
-<div class="bg-light py-5 border-bottom">
+<div class="bg-light py-3 border-bottom">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center">
             <div>
-                <h1 class="display-5 fw-bold">Tutorials</h1>
-                <p class="lead fs-4">Learn ASP.NET Core from the ground up. Free, cross-platform, and open-source.</p>
+                <h1 class="h2 mb-1">Tutorials</h1>
+                <p class="lead mb-0">Learn ASP.NET Core from the ground up. Free, cross-platform, and open-source.</p>
             </div>
-            {% if current_user.is_authenticated and current_user.is_admin() %}
+            {% if current_user.is_authenticated %}
             <div>
-                <a href="{{ url_for('tutorials.create') }}" class="btn btn-purple btn-lg">+ Create Tutorial</a>
+                <a href="{{ url_for('tutorials.create') }}" class="btn btn-purple">+ Create Tutorial</a>
             </div>
             {% endif %}
         </div>
-        <form class="row g-3 mt-3" method="get" action="{{ url_for('tutorials.list') }}">
+        <form class="row g-2 mt-2" method="get" action="{{ url_for('tutorials.list') }}">
         </form>
     </div>
 </div>
@@ -38,7 +38,7 @@
                     {% for cat in categories %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <a href="{{ url_for('tutorials.list', category=cat.slug) }}" class="text-decoration-none">{{ cat.name }}</a>
-                        <span class="badge bg-secondary rounded-pill">{{ cat.tutorials.count() }}</span>
+                        <span class="badge bg-secondary rounded-pill">{{ category_counts[cat.id] }}</span>
                     </li>
                     {% endfor %}
                 </ul>
@@ -54,7 +54,13 @@
                         <article class="card h-100 shadow-sm border-0 rounded-4 hover-shadow">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <span class="badge bg-purple">{{ tutorial.difficulty|capitalize }}</span>
+                                    <div>
+                                        <span class="badge bg-purple">{{ tutorial.difficulty|capitalize }}</span>
+                                        {% if not tutorial.is_published %}
+                                        <span class="badge bg-warning text-dark ms-1">Draft</span>
+                                        {% endif %}
+                                    </div>
+
                                     <small class="text-muted"><i class="far fa-calendar-alt me-1"></i>{{ tutorial.created_at.strftime('%b %d, %Y') }}</small>
                                 </div>
                                 <h5 class="card-title">
@@ -74,11 +80,11 @@
                     {% endfor %}
                 </div>
 
-                <!-- Pagination (optional) -->
+    
                 {% if pagination and pagination.pages > 1 %}
                 <nav class="mt-5">
                     <ul class="pagination justify-content-center">
-                        <!-- pagination logic here -->
+                     
                     </ul>
                 </nav>
                 {% endif %}

@@ -15,7 +15,14 @@ def list():
     page = request.args.get('page', 1, type=int)
     per_page = 6
 
-    query = Tutorial.query.filter_by(is_published=True)
+    query = Tutorial.query
+
+    if not current_user.is_authenticated:
+        query = query.filter_by(is_published=True)
+    else:
+        if not current_user.is_admin():
+            query = query.filter(
+                (Tutorial.is_published == True) | (Tutorial.user_id == current_user.id) )
 
     if category_slug:
         category = Category.query.filter_by(slug=category_slug).first_or_404()
@@ -32,11 +39,27 @@ def list():
     pagination = query.order_by(Tutorial.created_at.desc()).paginate(page=page, per_page=per_page, error_out=False)
     tutorials = pagination.items
     categories = Category.query.order_by(Category.sort_order).all()
-    total_count = Tutorial.query.filter_by(is_published=True).count()
+    
+    categories = Category.query.order_by(Category.sort_order).all()
+
+    category_counts = {}
+    for cat in categories:
+        cat_query = Tutorial.query.filter_by(category_id=cat.id)
+        if not current_user.is_authenticated:
+            cat_query = cat_query.filter_by(is_published=True)
+        else:
+            if not current_user.is_admin():
+                cat_query = cat_query.filter(
+                    (Tutorial.is_published == True) | (Tutorial.user_id == current_user.id)
+                )
+        category_counts[cat.id] = cat_query.count()
+
+    total_count = query.count()
 
     return render_template('tutorials_list.html.j2',
                            tutorials=tutorials,
                            categories=categories,
+                           category_counts=category_counts,
                            total_count=total_count,
                            pagination=pagination,
                            search_query=search_query)
@@ -56,7 +79,6 @@ def view(slug):
 #tutorial
 @bp.route('/create', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def create():
     form = TutorialForm()
     if form.validate_on_submit():
@@ -125,9 +147,11 @@ def edit(slug):
 
 @bp.route('/<slug>/delete', methods=['POST'])
 @login_required
-@admin_required
 def delete(slug):
     tutorial = Tutorial.query.filter_by(slug=slug).first_or_404()
+    if tutorial.user_id != current_user.id and not current_user.is_admin():
+        flash('You do not have permission to delete this tutorial.', 'danger')
+        abort(403)
     db.session.delete(tutorial)
     db.session.commit()
     flash('Tutorial deleted.', 'success')

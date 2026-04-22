@@ -34,34 +34,22 @@ def create_app(config_class=Config):
     from app.blueprints.admin import bp as admin_bp
     app.register_blueprint(admin_bp, url_prefix='/admin')
 
-    
+# === 資料表建立與初始化 ===
     with app.app_context():
-        from app.models.user import User, Role
-        from app.models.tutorial import Tutorial, Category, Tag
+        # 匯入所有 models（必須在 create_all 之前）
+        from app.models.user import User, Role, user_roles
+        from app.models.tutorial import Tutorial, Category, Tag, tutorial_tags
         from app.models.resource import Resource, ResourceCategory, Download
         from app.models.community import DiscussionPost, PostComment, PostLike
 
-        db.create_all()
+        try:
+            db.create_all()
+            print("✅ 所有資料表已成功建立（或已存在）")
+        except Exception as e:
+            print(f"⚠️ 建立資料表時發生錯誤: {e}")
 
-        import os
-        dump_file = os.path.join(os.path.dirname(__file__), '..', 'instance', 'database_dump.sql')
-        
-        if os.path.exists(dump_file):
-            try:
-                with open(dump_file, 'r', encoding='utf-8') as f:
-                    sql_script = f.read()
-                
-                for statement in sql_script.split(';'):
-                    if statement.strip():
-                        db.session.execute(statement)
-                
-                db.session.commit()
-                print("✅ 測試資料已成功匯入到資料庫！")
-                
+        # 未來可以在这里加入 seed data（測試資料匯入）
+        print("🚀 Flask app 啟動完成")
 
-            except Exception as e:
-                print(f"⚠️ 匯入測試資料時發生錯誤: {e}")
-        else:
-            print("ℹ️ 沒有找到 database_dump.sql，跳過資料匯入。")
 
     return app

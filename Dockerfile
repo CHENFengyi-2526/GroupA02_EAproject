@@ -2,35 +2,34 @@ FROM python:3.11-slim
 
 #deploy docker
 
-FROM python:3.11-slim
+# FROM python:3.11-slim
 
-RUN useradd -m -s /bin/bash appuser
+# RUN useradd -m -s /bin/bash appuser
 
-WORKDIR /app
+# WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt gunicorn
+# COPY requirements.txt .
+# RUN pip install --no-cache-dir -r requirements.txt gunicorn
 
-COPY app app
-COPY app/config.py run.py boot.sh ./
+# COPY app app
+# COPY app/config.py run.py boot.sh ./
 
-RUN chmod +x boot.sh
+# RUN chmod +x boot.sh
 
-ENV FLASK_APP run.py
-RUN chown -R appuser:appuser /app
-USER appuser
+# ENV FLASK_APP run.py
+# RUN chown -R appuser:appuser /app
+# USER appuser
 
-EXPOSE 8080
-CMD ["./boot.sh"]
-
-
+# EXPOSE 8080
+# CMD ["./boot.sh"]
 
 
-#deploy GCP
+
+
+#deploy GCP(Cloud run)
 
 #WORKDIR /app
 
-# 安裝必要套件 + Cloud SQL Proxy
 #RUN apt-get update && apt-get install -y --no-install-recommends \
 #    gcc libpq-dev curl \
 #    && curl -sSL https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -o /cloud_sql_proxy \
@@ -45,6 +44,29 @@ CMD ["./boot.sh"]
 #ENV PYTHONUNBUFFERED=1 \
 #    PORT=8080
 
-# 背景執行 Proxy + Gunicorn（單一指令，減少記憶體壓力）
 #CMD /cloud_sql_proxy -instances=groupa02eaproject:asia-east1:eadb=tcp:3306 & \
 #    gunicorn --bind 0.0.0.0:8080 --workers=1 --threads=4 --timeout=180 wsgi:app
+
+#deploy GCP(GKE)
+RUN useradd -m -s /bin/bash appuser
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt gunicorn
+
+
+COPY app app
+COPY wsgi.py run.py boot.sh ./
+
+RUN chmod +x boot.sh
+
+ENV FLASK_APP=run.py \
+    PORT=8080 \
+    FLASK_ENV=production
+
+RUN chown -R appuser:appuser /app
+USER appuser
+
+EXPOSE 8080
+CMD ["./boot.sh"]

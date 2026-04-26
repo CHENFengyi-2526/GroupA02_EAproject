@@ -6,7 +6,7 @@ asttokens==2.2.1
 attrs==22.1.0
 Babel==2.11.0
 backcall==0.2.0
-bcrypt==4.1.0
+bcrypt>=4.1.0
 beautifulsoup4==4.11.1
 bleach==5.0.1
 blinker==1.9.0
@@ -26,7 +26,7 @@ defusedxml==0.7.1
 dnspython==2.2.1
 dominate==2.7.0
 EditorConfig==0.12.3
-email-validator==2.1.0
+email-validator>=2.1.0
 entrypoints==0.4
 executing==1.2.0
 fastjsonschema==2.16.2

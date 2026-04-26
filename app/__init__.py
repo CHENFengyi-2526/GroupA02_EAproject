@@ -36,13 +36,4 @@ def create_app(config_class=Config):
     from app.blueprints.admin import bp as admin_bp
     app.register_blueprint(admin_bp, url_prefix='/admin')
 
-    with app.app_context():
-        from app.models.user import User, Role, user_roles
-        from app.models.tutorial import Tutorial, Category, Tag, tutorial_tags
-        from app.models.resource import Resource, ResourceCategory, Download
-        from app.models.community import DiscussionPost, PostComment, PostLike
-
-        print("🔧 FLASK_ENV =", os.environ.get('FLASK_ENV'))
-        print("🔧 Skipping db.create_all() in production for now...")
-
     return app

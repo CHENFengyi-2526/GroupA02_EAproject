@@ -1,7 +1,9 @@
-from flask import render_template,Blueprint,make_response, request, url_for, flash, redirect
+from flask import render_template, Blueprint, make_response, request, url_for, flash, redirect
 from app.models.tutorial import Tutorial
 from app.models.resource import Resource
-from flask_login import login_required
+from flask_login import login_required, current_user
+from app.forms import EditProfileForm         
+from app.extensions import db               
 
 bp = Blueprint('main', __name__)
 
@@ -33,3 +35,23 @@ def set_language(lang):
 def show_cookie():
     lang = request.cookies.get('preferred_language', 'not set')
     return f'Your preferred language is: {lang}'
+
+
+@bp.route('/edit_profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    form = EditProfileForm(current_user.username, current_user.email)
+    if form.validate_on_submit():
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        current_user.bio = form.bio.data
+        db.session.commit()
+        flash('Your profile has been updated.', 'success')
+        return redirect(url_for('main.user_profile', username=current_user.username))
+    
+
+    form.username.data = current_user.username
+    form.email.data = current_user.email
+    form.bio.data = current_user.bio
+    
+    return render_template('edit_profile.html.j2', form=form)

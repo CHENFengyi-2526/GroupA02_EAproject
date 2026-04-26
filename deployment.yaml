@@ -36,7 +36,8 @@ spec:
             secretKeyRef:
               name: db-secret
               key: SECRET_KEY
-        resources:
+        - name: PUBLIC_BASE_URL          
+          value: "http://34.81.14.237/"   
           requests:
             cpu: "300m"
             memory: "512Mi"

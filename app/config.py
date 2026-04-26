@@ -33,3 +33,6 @@ class Config:
     SESSION_COOKIE_SECURE = False
     REMEMBER_COOKIE_DURATION = 3600
     POSTS_PER_PAGE = 10
+
+    PUBLIC_BASE_URL = os.environ.get('PUBLIC_BASE_URL') or 'http://localhost:5000'
+    PREFERRED_URL_SCHEME = 'https' if PUBLIC_BASE_URL.startswith('https') else 'http'

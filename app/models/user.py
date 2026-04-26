@@ -40,7 +40,7 @@ class User(UserMixin, db.Model):
         return self.has_role('admin')
     
     def get_reset_password_token(self, expires_in=3600):
-        """生成重設密碼 token"""
+
         from flask import current_app
         from itsdangerous import URLSafeTimedSerializer
         
@@ -48,8 +48,8 @@ class User(UserMixin, db.Model):
         return s.dumps({'id': self.id}, salt='reset-password')
 
     @staticmethod
-    def verify_reset_password_token(token):
-        """驗證重設密碼 token"""
+    def verify_reset_password_token(token, expires_in=3600):
+
         from flask import current_app
         from itsdangerous import URLSafeTimedSerializer
         

@@ -4,8 +4,8 @@ from flask_mail import Message
 
 
 def send_async_email(app, msg):
-    """在背景執行寄信（正確傳入 app）"""
-    with app.app_context():        # ← 使用傳入的 app
+
+    with app.app_context():      
         try:
             mail = app.extensions.get('mail')
             if mail:
@@ -18,24 +18,29 @@ def send_async_email(app, msg):
 
 
 def send_email(subject, recipients, text_body, html_body):
-    """發送郵件"""
+
     msg = Message(subject, recipients=recipients)
     msg.body = text_body
     msg.html = html_body
 
-    # 正確傳入 current_app 到執行緒
+
     Thread(target=send_async_email, 
            args=(current_app._get_current_object(), msg)).start()
 
 
 def send_password_reset_email(user):
-    """寄送重設密碼郵件"""
+
+    from flask import current_app
+    
     token = user.get_reset_password_token()
+    
+    reset_url = f"{current_app.config['PUBLIC_BASE_URL']}/auth/reset_password/{token}"
+    
     send_email(
         subject='[ASP.NET Core Community] Reset Your Password',
         recipients=[user.email],
         text_body=render_template('email/reset_password.txt.j2', 
-                                  user=user, token=token),
+                                  user=user, reset_url=reset_url),
         html_body=render_template('email/reset_password.html.j2', 
-                                  user=user, token=token)
+                                  user=user, reset_url=reset_url)
     )

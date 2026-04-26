@@ -74,7 +74,6 @@ def reset_password_request():
     
     return render_template('reset_password_request.html.j2', form=form)
 
-
 @bp.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     if current_user.is_authenticated:

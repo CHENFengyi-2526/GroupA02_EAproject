@@ -111,3 +111,14 @@ class ResourceForm(FlaskForm):
         super().__init__(*args, **kwargs)
         from app.models.resource import ResourceCategory
         self.category_id.choices = [(c.id, c.name) for c in ResourceCategory.query.all()] + [(0, 'Uncategorized')]
+
+class ResetPasswordRequestForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Send Reset Link')
+
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('New Password', validators=[DataRequired(), Length(min=6)])
+    password2 = PasswordField('Confirm Password', 
+                              validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Reset Password')

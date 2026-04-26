@@ -39,8 +39,26 @@ class User(UserMixin, db.Model):
     def is_admin(self):
         return self.has_role('admin')
     
-    def __repr__(self):
-        return f'<User {self.username}>'
+    def get_reset_password_token(self, expires_in=3600):
+        """生成重設密碼 token"""
+        from flask import current_app
+        from itsdangerous import URLSafeTimedSerializer
+        
+        s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        return s.dumps({'id': self.id}, salt='reset-password')
+
+    @staticmethod
+    def verify_reset_password_token(token):
+        """驗證重設密碼 token"""
+        from flask import current_app
+        from itsdangerous import URLSafeTimedSerializer
+        
+        s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token, salt='reset-password', max_age=expires_in)
+        except:
+            return None
+        return User.query.get(data['id'])
 
 class Role(db.Model):
     __tablename__ = 'roles'

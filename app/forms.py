@@ -59,6 +59,32 @@ class TagForm(FlaskForm):
     slug = StringField('Slug', validators=[DataRequired(), Length(max=50)])
     submit = SubmitField('Save')
 
+class EditProfileForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(min=3, max=64)])
+    email = StringField('Email', validators=[DataRequired(), Email(), Length(max=120)])
+    bio = TextAreaField('About me', validators=[Length(max=500)])
+    submit = SubmitField('Save Changes')
+
+    def __init__(self, original_username, original_email, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.original_username = original_username
+        self.original_email = original_email
+
+    def validate_username(self, username):
+        if username.data != self.original_username:
+            from app.models.user import User
+            user = User.query.filter_by(username=username.data).first()
+            if user:
+                raise ValidationError('Username already taken.')
+
+    def validate_email(self, email):
+        if email.data != self.original_email:
+            from app.models.user import User
+            user = User.query.filter_by(email=email.data).first()
+            if user:
+                raise ValidationError('Email already registered.')
+        
+
 class TutorialForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired(), Length(max=200)])
     slug = StringField('Slug', validators=[DataRequired(), Length(max=200)])

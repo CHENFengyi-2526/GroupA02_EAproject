@@ -28,7 +28,7 @@ def dashboard():
 @admin_required
 def list_users():
     users = User.query.all()
-    return render_template('admin/users.html.j2', user=User)
+    return render_template('admin/users.html.j2', users=users)
 
 @bp.route('/user/create', methods=['GET', 'POST'])
 @login_required
@@ -42,14 +42,14 @@ def create_user():
         else:
 
             flash('Password is required for new user.', 'danger')
-            return render_template('admin/user_form.html', form=form)
+            return render_template('admin/user_form.html.j2', form=form)
         user.role = form.role.data  
 
         db.session.add(user)
         db.session.commit()
         flash('User created.', 'success')
         return redirect(url_for('admin.list_users'))
-    return render_template('admin/user_form.html', form=form)
+    return render_template('admin/user_form.html.j2', form=form)
 
 @bp.route('/user/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
@@ -66,7 +66,7 @@ def edit_user(id):
         flash('User updated.', 'success')
         db.session.commit()
         return redirect(url_for('admin.list_users'))
-    return render_template('admin/user_form.html', form=form, user=user)
+    return render_template('admin/user_form.html.j2', form=form, user=user)
 
 @bp.route('/user/<int:id>/delete', methods=['POST'])
 @login_required
@@ -87,7 +87,7 @@ def delete_user(id):
 @admin_required
 def list_roles():
     roles = Role.query.all()
-    return render_template('admin/roles.html', roles=roles)
+    return render_template('admin/roles.html.j2', roles=roles)
 
 @bp.route('/role/create', methods=['GET', 'POST'])
 @login_required
@@ -100,7 +100,7 @@ def create_role():
         db.session.commit()
         flash('Role created.', 'success')
         return redirect(url_for('admin.list_roles'))
-    return render_template('admin/role_form.html', form=form)
+    return render_template('admin/role_form.html.j2', form=form)
 
 @bp.route('/role/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
@@ -114,7 +114,7 @@ def edit_role(id):
         db.session.commit()
         flash('Role updated.', 'success')
         return redirect(url_for('admin.list_roles'))
-    return render_template('admin/role_form.html', form=form, role=role)
+    return render_template('admin/role_form.html.j2', form=form, role=role)
 
 @bp.route('/role/<int:id>/delete', methods=['POST'])
 @login_required

@@ -42,7 +42,7 @@ FROM python:3.11-slim
 #COPY . .
 
 #ENV PYTHONUNBUFFERED=1 \
-#    PORT=8080
+ #  PORT=8080
 
 #CMD /cloud_sql_proxy -instances=groupa02eaproject:asia-east1:eadb=tcp:3306 & \
 #    gunicorn --bind 0.0.0.0:8080 --workers=1 --threads=4 --timeout=180 wsgi:app

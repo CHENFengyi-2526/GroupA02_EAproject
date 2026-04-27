@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: flask
-        image: asia-east1-docker.pkg.dev/groupa02eaproject/flask-repo/flask-app:v7
+        image: asia-east1-docker.pkg.dev/groupa02eaproject/flask-repo/flask-app:v11
         ports:
         - containerPort: 8080
         env:
@@ -36,8 +36,15 @@ spec:
             secretKeyRef:
               name: db-secret
               key: SECRET_KEY
-        - name: PUBLIC_BASE_URL          
-          value: "http://34.81.14.237/"   
+        - name: PUBLIC_BASE_URL
+          value: "http://34.81.14.237"
+        - name: MAIL_USERNAME
+          value: "itp4115ead@gmail.com"
+        - name: MAIL_DEFAULT_SENDER
+          value: "itp4115ead@gmail.com"
+        - name: MAIL_PASSWORD
+          value: "osdkonjwlzwaezdx"
+        resources:
           requests:
             cpu: "300m"
             memory: "512Mi"

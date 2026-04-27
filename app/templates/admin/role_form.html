@@ -1,0 +1,32 @@
+{% extends "base.html.j2" %}
+
+{% block title %}{{ 'Edit Role' if role else 'Create Role' }} - ASP.NET Core Community{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h2 class="mb-4">{{ 'Edit Role' if role else 'Create New Role' }}</h2>
+
+    <form method="post">
+        {{ form.csrf_token }}
+
+        <div class="mb-3">
+            {{ form.name.label(class="form-label") }}
+            {{ form.name(class="form-control", placeholder="Enter role name (e.g., admin, editor, user)") }}
+            {% if form.name.errors %}
+                <div class="text-danger">{{ form.name.errors[0] }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            {{ form.description.label(class="form-label") }}
+            {{ form.description(class="form-control", rows=3, placeholder="Role description (optional)") }}
+            {% if form.description.errors %}
+                <div class="text-danger">{{ form.description.errors[0] }}</div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="{{ url_for('admin.list_roles') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

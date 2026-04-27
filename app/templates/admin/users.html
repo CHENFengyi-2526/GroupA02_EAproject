@@ -1,0 +1,38 @@
+cat > app/templates/admin/users.html << 'EOF'
+{% extends "base.html.j2" %}
+
+{% block title %}User Management - ASP.NET Core Community{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h2 class="mb-4">User List</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.role.name if user.role else 'User' }}</td>
+                <td>
+                    <a href="{{ url_for('admin.edit_user', id=user.id) }}" class="btn btn-sm btn-primary">Edit</a>
+                    <form method="post" action="{{ url_for('admin.delete_user', id=user.id) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+EOF

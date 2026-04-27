@@ -225,7 +225,6 @@ def delete_category(id):
 
 @bp.route('/tags')
 @login_required
-@admin_required
 def list_tags():
     tags = Tag.query.all()
     return render_template('tutorials_tags.html.j2', tags=tags)
@@ -233,7 +232,6 @@ def list_tags():
 
 @bp.route('/tag/create', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def create_tag():
     form = TagForm()
     if form.validate_on_submit():
@@ -247,7 +245,6 @@ def create_tag():
 
 @bp.route('/tag/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def edit_tag(id):
     tag = Tag.query.get_or_404(id)
     form = TagForm(obj=tag)

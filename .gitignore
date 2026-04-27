@@ -131,3 +131,4 @@ dmypy.json
 logs/*
 app.db
 app.db
+app.db

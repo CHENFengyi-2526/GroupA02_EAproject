@@ -1,0 +1,37 @@
+{% extends "base.html.j2" %}
+
+{% block title %}Manage Tags{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Tags</h2>
+        {% if current_user.is_authenticated and current_user.is_admin() %}
+        <a href="{{ url_for('tutorials.create_tag') }}" class="btn btn-purple">+ New Tag</a>
+        {% endif %}
+    </div>
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr><th>Name</th><th>Slug</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                    {% for tag in tags %}
+                    <tr>
+                        <td>{{ tag.name }}</td>
+                        <td>{{ tag.slug }}</td>
+                        <td>
+                            <a href="{{ url_for('tutorials.edit_tag', id=tag.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                            <form method="post" action="{{ url_for('tutorials.delete_tag', id=tag.id) }}" style="display:inline;" onsubmit="return confirm('Delete this tag?')">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

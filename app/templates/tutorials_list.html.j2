@@ -14,6 +14,7 @@
             {% if current_user.is_authenticated %}
             <div>
                 <a href="{{ url_for('tutorials.create') }}" class="btn btn-purple">+ Create Tutorial</a>
+                <a href="{{ url_for('tutorials.list_tags') }}" class="btn btn-purple"> Tags </a>
             </div>
             {% endif %}
         </div>
@@ -21,6 +22,7 @@
         </form>
     </div>
 </div>
+
 
 <div class="container my-5">
     <div class="row">

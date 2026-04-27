@@ -23,8 +23,10 @@
                 <td>{{ user.email }}</td>
                 <td>{{ user.role.name if user.role else 'User' }}</td>
                 <td>
-                    <a href="#" class="btn btn-sm btn-primary">Edit</a>
-                    <button class="btn btn-sm btn-danger" onclick="return confirm('Delete not implemented yet')">Delete</button>
+                    <a href="{{ url_for('admin.edit_user', id=user.id) }}" class="btn btn-sm btn-primary">Edit</a>
+                    <form method="post" action="{{ url_for('admin.delete_user', id=user.id) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
                 </td>
             </tr>
             {% endfor %}

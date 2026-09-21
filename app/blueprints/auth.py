@@ -41,6 +41,20 @@ def register():
         user = User(username=form.username.data, email=form.email.data)
         user.set_password(form.password.data)
         db.session.add(user)
+        db.session.flush()  # 先 flush 拿到 user.id
+
+        from app.models.member_a import ElderlyProfile, UserSetting, ConsentRecord
+
+        if form.role.data == 'elderly':
+            profile = ElderlyProfile(user_id=user.id, full_name=user.username)
+            db.session.add(profile)
+
+        setting = UserSetting(user_id=user.id)
+        db.session.add(setting)
+
+        consent = ConsentRecord(user_id=user.id, consent_type='data_collection', consent_status='pending')
+        db.session.add(consent)
+
         db.session.commit()
         
         

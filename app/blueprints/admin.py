@@ -43,7 +43,12 @@ def create_user():
 
             flash('Password is required for new user.', 'danger')
             return render_template('admin/user_form.html', form=form)
-        user.role = form.role.data  
+        role = Role.query.filter_by(name=form.role.data).first()
+        if not role:
+            role = Role(name=form.role.data, description=f'{form.role.data} role')
+            db.session.add(role)
+            db.session.flush()
+        user.roles.append(role)
 
         db.session.add(user)
         db.session.commit()
@@ -62,6 +67,14 @@ def edit_user(id):
         user.email = form.email.data
         if form.password.data:
             user.set_password(form.password.data)
+
+        # 更新角色
+        new_role = Role.query.filter_by(name=form.role.data).first()
+        if not new_role:
+            new_role = Role(name=form.role.data, description=f'{form.role.data} role')
+            db.session.add(new_role)
+            db.session.flush()
+        user.roles = [new_role]
 
         flash('User updated.', 'success')
         db.session.commit()

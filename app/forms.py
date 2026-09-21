@@ -43,7 +43,12 @@ class UserForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=3, max=64)])
     email = StringField('Email', validators=[DataRequired(), Email(), Length(max=120)])
     password = PasswordField('Password (leave blank to keep unchanged)')
-    role = SelectField('Role', choices=[('user', 'User'), ('admin', 'Admin')], validators=[DataRequired()])
+    role = SelectField('Role', choices=[
+        ('admin', 'Admin'),
+        ('elderly', 'Elderly User'),
+        ('family', 'Family Member'),
+        ('social_worker', 'Social Worker')
+    ], validators=[DataRequired()])
     submit = SubmitField('Save')
 
 class RoleForm(FlaskForm):

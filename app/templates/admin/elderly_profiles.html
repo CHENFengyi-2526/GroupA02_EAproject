@@ -1,0 +1,25 @@
+{% extends "base.html.j2" %}
+{% block title %}Elderly Profiles - Admin{% endblock %}
+{% block content %}
+<div class="container my-4">
+    <h2 class="mb-4">Elderly Profiles</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr><th>ID</th><th>User ID</th><th>Full Name</th><th>Age</th><th>Gender</th><th>Address</th><th>Created</th></tr>
+        </thead>
+        <tbody>
+            {% for p in profiles %}
+            <tr>
+                <td>{{ p.id }}</td>
+                <td>{{ p.user_id }}</td>
+                <td>{{ p.full_name or '-' }}</td>
+                <td>{{ p.age or '-' }}</td>
+                <td>{{ p.gender or '-' }}</td>
+                <td>{{ p.address or '-' }}</td>
+                <td>{{ p.created_at }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

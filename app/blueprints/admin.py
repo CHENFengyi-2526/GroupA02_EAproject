@@ -251,3 +251,67 @@ def delete_resource_category(id):
     db.session.commit()
     flash('Category deleted.', 'success')
     return redirect(url_for('admin.list_resource_categories'))
+
+
+# ==================== Member A Management ====================
+
+from app.models.member_a import (
+    ElderlyProfile, FamilyContact, UserDevice,
+    ConsentRecord, FamilyElderlyLink, AccessLog, UserSetting
+)
+
+
+@bp.route('/elderly-profiles')
+@login_required
+@admin_required
+def list_elderly_profiles():
+    profiles = ElderlyProfile.query.all()
+    return render_template('admin/elderly_profiles.html', profiles=profiles)
+
+
+@bp.route('/family-contacts')
+@login_required
+@admin_required
+def list_family_contacts():
+    contacts = FamilyContact.query.all()
+    return render_template('admin/family_contacts.html', contacts=contacts)
+
+
+@bp.route('/user-devices')
+@login_required
+@admin_required
+def list_user_devices():
+    devices = UserDevice.query.all()
+    return render_template('admin/user_devices.html', devices=devices)
+
+
+@bp.route('/consent-records')
+@login_required
+@admin_required
+def list_consent_records():
+    records = ConsentRecord.query.all()
+    return render_template('admin/consent_records.html', records=records)
+
+
+@bp.route('/family-elderly-links')
+@login_required
+@admin_required
+def list_family_elderly_links():
+    links = FamilyElderlyLink.query.all()
+    return render_template('admin/family_elderly_links.html', links=links)
+
+
+@bp.route('/access-logs')
+@login_required
+@admin_required
+def list_access_logs():
+    logs = AccessLog.query.order_by(AccessLog.accessed_at.desc()).limit(200).all()
+    return render_template('admin/access_logs.html', logs=logs)
+
+
+@bp.route('/user-settings')
+@login_required
+@admin_required
+def list_user_settings():
+    settings = UserSetting.query.all()
+    return render_template('admin/user_settings.html', settings=settings)

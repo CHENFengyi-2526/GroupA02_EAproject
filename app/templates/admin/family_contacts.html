@@ -1,0 +1,24 @@
+{% extends "base.html.j2" %}
+{% block title %}Family Contacts - Admin{% endblock %}
+{% block content %}
+<div class="container my-4">
+    <h2 class="mb-4">Family Contacts</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr><th>ID</th><th>User ID</th><th>Name</th><th>Phone</th><th>Relationship</th><th>Emergency</th></tr>
+        </thead>
+        <tbody>
+            {% for c in contacts %}
+            <tr>
+                <td>{{ c.id }}</td>
+                <td>{{ c.user_id }}</td>
+                <td>{{ c.contact_name }}</td>
+                <td>{{ c.phone or '-' }}</td>
+                <td>{{ c.relationship or '-' }}</td>
+                <td>{{ 'Yes' if c.is_emergency else 'No' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

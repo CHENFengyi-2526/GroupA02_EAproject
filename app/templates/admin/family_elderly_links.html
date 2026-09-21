@@ -1,0 +1,23 @@
+{% extends "base.html.j2" %}
+{% block title %}Family-Elderly Links - Admin{% endblock %}
+{% block content %}
+<div class="container my-4">
+    <h2 class="mb-4">Family-Elderly Links</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr><th>ID</th><th>Family User ID</th><th>Elderly Profile ID</th><th>Relationship</th><th>Linked At</th></tr>
+        </thead>
+        <tbody>
+            {% for l in links %}
+            <tr>
+                <td>{{ l.id }}</td>
+                <td>{{ l.family_user_id }}</td>
+                <td>{{ l.elderly_profile_id }}</td>
+                <td>{{ l.relationship or '-' }}</td>
+                <td>{{ l.linked_at }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

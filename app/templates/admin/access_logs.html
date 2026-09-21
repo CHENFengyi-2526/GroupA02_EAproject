@@ -1,0 +1,23 @@
+{% extends "base.html.j2" %}
+{% block title %}Access Logs - Admin{% endblock %}
+{% block content %}
+<div class="container my-4">
+    <h2 class="mb-4">Access Logs (latest 200)</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr><th>ID</th><th>User ID</th><th>Action</th><th>IP Address</th><th>Accessed At</th></tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.id }}</td>
+                <td>{{ log.user_id or '-' }}</td>
+                <td>{{ log.action or '-' }}</td>
+                <td>{{ log.ip_address or '-' }}</td>
+                <td>{{ log.accessed_at }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

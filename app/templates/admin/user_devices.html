@@ -1,0 +1,24 @@
+{% extends "base.html.j2" %}
+{% block title %}User Devices - Admin{% endblock %}
+{% block content %}
+<div class="container my-4">
+    <h2 class="mb-4">User Devices</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr><th>ID</th><th>User ID</th><th>Device Name</th><th>Type</th><th>UUID</th><th>Last Active</th></tr>
+        </thead>
+        <tbody>
+            {% for d in devices %}
+            <tr>
+                <td>{{ d.id }}</td>
+                <td>{{ d.user_id }}</td>
+                <td>{{ d.device_name or '-' }}</td>
+                <td>{{ d.device_type or '-' }}</td>
+                <td>{{ d.device_uuid or '-' }}</td>
+                <td>{{ d.last_active or '-' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

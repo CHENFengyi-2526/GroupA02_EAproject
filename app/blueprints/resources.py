@@ -9,15 +9,22 @@ bp = Blueprint('resources', __name__, url_prefix='/resources')
 
 @bp.route('/')
 def list():
+    resource_type = request.args.get('type')
     category_slug = request.args.get('category')
+    
+    query = Resource.query
+    
+    if resource_type:
+        query = query.filter(Resource.type == resource_type)
+    
     if category_slug:
-        category = ResourceCategory.query.filter_by(slug=category_slug).first_or_404()
-        resources = Resource.query.filter_by(category_id=category.id).all()
-    else:
-        resources = Resource.query.all()
+        category = ResourceCategory.query.filter_by(slug=category_slug).first()
+        if category:
+            query = query.filter(Resource.category_id == category.id)
+    
+    resources = query.all()
     categories = ResourceCategory.query.all()
     return render_template('resources_list.html.j2', resources=resources, categories=categories)
-
 @bp.route('/<int:id>')
 def view(id):
     resource = Resource.query.get_or_404(id)

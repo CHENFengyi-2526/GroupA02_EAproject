@@ -1,11 +1,11 @@
 import os
-
+from flask_migrate import Migrate
 from flask import Flask
 from app.config import Config
 from flask_mail import Mail
 from app.extensions import db, login_manager, bootstrap, mail
 
-
+migrate = Migrate()
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -16,7 +16,8 @@ def create_app(config_class=Config):
     login_manager.init_app(app)
     bootstrap.init_app(app)
     mail.init_app(app)
-
+    migrate.init_app(app, db)
+    
     from app.blueprints.auth import bp as auth_bp
     app.register_blueprint(auth_bp, url_prefix='/auth')
     

@@ -44,6 +44,15 @@ def register():
         db.session.flush()  # 先 flush 拿到 user.id
 
         from app.models.member_a import ElderlyProfile, UserSetting, ConsentRecord
+        from app.models.user import Role
+
+        # 找到或创建对应角色
+        role = Role.query.filter_by(name=form.role.data).first()
+        if not role:
+            role = Role(name=form.role.data, description=f'{form.role.data} role')
+            db.session.add(role)
+            db.session.flush()
+        user.roles.append(role)
 
         if form.role.data == 'elderly':
             profile = ElderlyProfile(user_id=user.id, full_name=user.username)
